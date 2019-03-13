@@ -60,11 +60,11 @@ router.post('/actions', async (req, res) => {
       console.log("###slack request is "+slackReqObj);
       
       let response;
-      if (slackReqObj.callback_id === 'pending_booking_reason_selection') {
-        response = {"Result":"Yes, this seems working\nGood work!!!"}
+      if (slackReqObj.callback_id === 'query_selection') {
+        response = "Yes, this seems working\nGood work!!!"
         console.log("###slack call back received for pending booking reason selection");
       }
-      return res.json(response);
+      return res.send(response);
     } catch (err) {
       console.log(err);
       return res.status(500).send('Something blew up. We\'re looking into it.');
