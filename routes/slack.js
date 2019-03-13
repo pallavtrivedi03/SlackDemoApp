@@ -77,19 +77,32 @@ router.post('/actions', async (req, res) => {
       const slackReqObj = JSON.parse(req.body.payload);
       console.log("###slack request is "+slackReqObj);
       
-      let response = "Something went wrong";
+      var response = "Something went wrong";
       if (slackReqObj.callback_id === 'query_selection') {
+        console.log("option selected is "+slackReqObj.actions[0].selected_options[0].value);
         switch (slackReqObj.actions[0].selected_options[0].value) {
           case "openIssues":
+            console.log("in open issues");
             response = openIssues;
+            break;
           case "closedIssues":
+            console.log("in close issues");
             response = closedIssues;
+            break;
           case "milestones":
+            console.log("in milestones ");
             response = milestones;
+            break;
           case "note":
+            console.log("in note ");
             response = productNote;
+            break;
           case "crashReport":
+            console.log("in report issues");
             response = crashReport;
+            break;
+          default:
+            response = "None of the cases";
         }
       }
       return res.send(response);
