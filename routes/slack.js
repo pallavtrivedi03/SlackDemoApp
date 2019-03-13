@@ -18,6 +18,24 @@ const queryOptions = [{
     value: 'crashReport'
   }];
 
+  const openIssues = 
+  `Token is not being passed in slack request.\n
+  Database connectivity is missing.`
+
+  const closedIssues = 
+  `Slash commands are not being invoked\n
+  Webhook is not responding.`
+
+  const milestones = 
+  `Integrate bot communication in slack channel.\n
+  Handle various actions on slash commands.`
+
+  const productNote = 
+  `SlackAppDemo is a PoC project to demonstrate how slack app is made, how slash commands and interactive components work. 
+  Also, how we can use webhook to integrate our backend with slack.`
+
+  const crashReport = `:smiling_face_with_sunglasses: \nNo crashes till now.`
+
 router.get('/', function(req, res, next) {
   
 });
@@ -61,6 +79,18 @@ router.post('/actions', async (req, res) => {
       
       let response;
       if (slackReqObj.callback_id === 'query_selection') {
+        switch (slackReqObj.selected_options[0].value) {
+          case "openIssues":
+            response = openIssues;
+          case "closedIssues":
+            response = closedIssues;
+          case "milestones":
+            response = milestones;
+          case "note":
+            response = productNote;
+          case "crashReport":
+            response = crashReport;
+        }
         response = "Yes, this seems working\nGood work!!!"
         console.log("###slack call back received for pending booking reason selection");
       }
