@@ -77,7 +77,7 @@ router.post('/actions', async (req, res) => {
       const slackReqObj = JSON.parse(req.body.payload);
       console.log("###slack request is "+slackReqObj);
       
-      let response;
+      let response = "Something went wrong";
       if (slackReqObj.callback_id === 'query_selection') {
         switch (slackReqObj.actions[0].selected_options[0].value) {
           case "openIssues":
@@ -91,8 +91,6 @@ router.post('/actions', async (req, res) => {
           case "crashReport":
             response = crashReport;
         }
-        response = "Yes, this seems working\nGood work!!!"
-        console.log("###slack call back received for pending booking reason selection");
       }
       return res.send(response);
     } catch (err) {
