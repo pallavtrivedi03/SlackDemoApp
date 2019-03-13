@@ -79,7 +79,7 @@ router.post('/actions', async (req, res) => {
       
       let response;
       if (slackReqObj.callback_id === 'query_selection') {
-        switch (slackReqObj.selected_options[0].value) {
+        switch (slackReqObj.actions[0].selected_options[0].value) {
           case "openIssues":
             response = openIssues;
           case "closedIssues":
