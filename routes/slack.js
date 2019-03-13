@@ -64,7 +64,7 @@ router.post('/actions', async (req, res) => {
         response = "Yes, this seems working\nGood work!!!"
         console.log("###slack call back received for pending booking reason selection");
       }
-      return res.send(response);
+      return res.json(response);
     } catch (err) {
       console.log(err);
       return res.status(500).send('Something blew up. We\'re looking into it.');
