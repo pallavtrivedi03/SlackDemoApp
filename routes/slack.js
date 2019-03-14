@@ -36,6 +36,21 @@ const queryOptions = [{
 
   const crashReport = `:smiling_face_with_sunglasses: \nNo crashes till now.`
 
+
+const requestOptions = [{
+    text: 'Pending at L1 Approval',
+    value: 'levelOneApproval'
+  },{
+    text: 'Pending at L2 Approval',
+    value: 'levelTwoApproval'
+  },{
+    text: 'Pending at L3 Approval',
+    value: 'levelThreeApproval'
+  },{
+    text: 'Approved',
+    value: 'approved'
+  }];
+
 router.get('/', function(req, res, next) {
   
 });
@@ -68,6 +83,33 @@ router.post('/SlackAppDemo',function(req,res) {
       }
 });
 
+router.post('/requests',function(req,res) {
+    try {
+        const slackReqObj = req.body;
+        const response = {
+          response_type: 'in_channel',
+          channel: slackReqObj.channel_id,
+          text: 'Hey..',
+          attachments: [{
+            text: 'Which request are you looking for?',
+            fallback: 'Which request are you looking for?',
+            color: '#2c963f',
+            attachment_type: 'default',
+            callback_id: 'request_selection',
+            actions: [{
+              name: 'request_select_menu',
+              text: 'Choose an option...',
+              type: 'select',
+              options: requestOptions,
+            }],
+          }],
+        };
+        return res.json(response);
+      } catch (err) {
+        log.error(err);
+        return res.status(500).send('Something blew up. We\'re looking into it.');
+      }
+});
 
 router.post('/actions', async (req, res) => {
     console.log("###slack Send response. Action taken by user");
@@ -100,6 +142,16 @@ router.post('/actions', async (req, res) => {
           case "crashReport":
             console.log("in report issues");
             response = crashReport;
+            break;
+          default:
+            response = "None of the cases";
+        }
+      } else if (slackReqObj.callback_id === 'request_selection') {
+        console.log("option selected is "+slackReqObj.actions[0].selected_options[0].value);
+        switch (slackReqObj.actions[0].selected_options[0].value) {
+          case "levelOneApproval":
+            console.log("in open issues");
+            response = "Purchase of Network Switch (Req Id: PR337)\nPurchase of Condenser Mic (Req Id: PR479)";
             break;
           default:
             response = "None of the cases";
