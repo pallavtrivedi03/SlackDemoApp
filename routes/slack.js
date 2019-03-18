@@ -2,21 +2,21 @@ var express = require('express');
 var router = express.Router();
 
 const queryOptions = [{
-    text: 'Open Issues',
-    value: 'opneIssues'
-  },{
-    text: 'Closed Issues',
-    value: 'closedIssues'
-  },{
-    text: 'Milestones',
-    value: 'milestones'
-  },{
-    text: 'Product Note',
-    value: 'note'
-  },{
-    text: 'Crash Report',
-    value: 'crashReport'
-  }];
+  text: 'Open Issues',
+  value: 'opneIssues'
+}, {
+  text: 'Closed Issues',
+  value: 'closedIssues'
+}, {
+  text: 'Milestones',
+  value: 'milestones'
+}, {
+  text: 'Product Note',
+  value: 'note'
+}, {
+  text: 'Crash Report',
+  value: 'crashReport'
+}];
 
   const openIssues = 
   `Token is not being passed in slack request.\n
@@ -34,7 +34,7 @@ const queryOptions = [{
   `SlackAppDemo is a PoC project to demonstrate how slack app is made, how slash commands and interactive components work. 
   Also, how we can use webhook to integrate our backend with slack.`
 
-  const crashReport = `:smiling_face_with_sunglasses: \nNo crashes till now.`
+  const crashReport = `Yayyy..!! \nNo crashes till now.`
 
 router.get('/', function(req, res, next) {
   
@@ -42,11 +42,10 @@ router.get('/', function(req, res, next) {
 
 router.post('/SlackAppDemo',function(req,res) {
     try {
-        const slackReqObj = req.body;
         const response = {
           response_type: 'in_channel',
-          channel: slackReqObj.channel_id,
-          text: 'Hello :slightly_smiling_face:',
+          channel: req.body.channel_id,
+          text: 'Hey there...:',
           attachments: [{
             text: 'What would you like to know in this project?',
             fallback: 'What would you like to know in this project?',
@@ -63,53 +62,45 @@ router.post('/SlackAppDemo',function(req,res) {
         };
         return res.json(response);
       } catch (err) {
-        log.error(err);
-        return res.status(500).send('Something blew up. We\'re looking into it.');
+        console.log(err);
+        return res.status(500).send('Something went wrong :(');
       }
 });
 
 
 router.post('/actions', async (req, res) => {
-    console.log("###slack Send response. Action taken by user");
-    console.log(req.body);
+  try {
+    const payload = JSON.parse(req.body.payload);
+    console.log("###slack request is "+payload);
     
-    try {
-      const slackReqObj = JSON.parse(req.body.payload);
-      console.log("###slack request is "+slackReqObj);
-      
-      var response = "Something went wrong";
-      if (slackReqObj.callback_id === 'query_selection') {
-        console.log("option selected is "+slackReqObj.actions[0].selected_options[0].value);
-        switch (slackReqObj.actions[0].selected_options[0].value) {
-          case "openIssues":
-            console.log("in open issues");
-            response = openIssues;
-            break;
-          case "closedIssues":
-            console.log("in close issues");
-            response = closedIssues;
-            break;
-          case "milestones":
-            console.log("in milestones ");
-            response = milestones;
-            break;
-          case "note":
-            console.log("in note ");
-            response = productNote;
-            break;
-          case "crashReport":
-            console.log("in report issues");
-            response = crashReport;
-            break;
-          default:
-            response = "None of the cases";
-        }
+    var response = "";
+    if (payload.callback_id === 'query_selection') {
+      console.log("option selected is "+payload.actions[0].selected_options[0].value);
+      switch (payload.actions[0].selected_options[0].value) {
+        case "openIssues":
+          response = openIssues;
+          break;
+        case "closedIssues":
+          response = closedIssues;
+          break;
+        case "milestones":
+          response = milestones;
+          break;
+        case "note":
+          response = productNote;
+          break;
+        case "crashReport":
+          response = crashReport;
+          break;
+        default:
+          response = "None of the cases";
       }
-      return res.send(response);
-    } catch (err) {
-      console.log(err);
-      return res.status(500).send('Something blew up. We\'re looking into it.');
     }
-  });
+    return res.send(response);
+  } catch (err) {
+    console.log(err);
+    return res.status(500).send('Something went wrong.');
+  }
+});
 
 module.exports = router;
